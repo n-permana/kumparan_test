@@ -6,13 +6,17 @@ from bson import json_util, ObjectId
 @app.route("/")
 @app.route("/home")
 def home():
-    return "Test Kumparan"
+    return """Test Kumparan"""
 
 @app.route("/news", methods=['GET'])
 def get_news():
     filter_status = request.args.get('status')
     filter_topic = request.args.get('topic')
-    news_list = json_util.dumps(news_collection.find({'status':filter_status,'topics':filter_topic}))
+    if filter_status == None:
+      filter_status = ""
+    if filter_topic == None:
+      filter_topic = ""
+    news_list = json_util.dumps(news_collection.find({'status':{"$regex": filter_status},'topics':{"$regex": filter_topic}}))
     return news_list
 
 @app.route("/news/<id>", methods=['GET'])
